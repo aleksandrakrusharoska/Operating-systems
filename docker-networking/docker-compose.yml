@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  udpserver:
+    build:
+      context: ./udpserver
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090/udp"
+    networks:
+      - udp
+  udpclient:
+    build:
+      context: ./udpclient
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    deploy:
+      replicas: 5
+    networks:
+      - udp
+    depends_on:
+      - udpserver
+  tcpserver:
+    build:
+      context: ./tcpserver
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000/tcp"
+    networks:
+      - tcp
+  tcpclient:
+    build:
+      context: ./tcpclient
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
+    deploy:
+      replicas: 5
+    networks: 
+      - tcp
+    depends_on:
+      - tcpserver
+
+networks:
+  udp:
+    driver: bridge
+  tcp:
+    driver: bridge
